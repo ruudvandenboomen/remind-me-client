@@ -10,7 +10,9 @@ const events = z.array(
 );
 
 export default defineEventHandler(async (event) => {
-  const result = await $fetch("http:localhost:4000/api/events");
-
+  const BASE_URL = useRuntimeConfig().public.apiUrl;
+  const result = await $fetch(`${BASE_URL}/events`, {
+    headers: event.headers,
+  });
   return events.parse(result);
 });

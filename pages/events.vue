@@ -1,12 +1,20 @@
 <template>
     <div v-for="(event, index) in events" :key="event._id">
         <div :style="'animation-delay: ' + index * 0.1 + 's'" class="animate pop">
-            <Event :event="event"/>
+            <Event :event="event" />
         </div>
     </div>
 </template>
-<script setup>
-const { data: events } = useFetch('/api/events', { transform: events => events.map(event => ({ ...event, date: new Date(event.date).toDateString(), })) })
+<script setup lang="ts">
+const { data: events } = useFetch('/api/events', {
+    transform: events => events.map(event => ({ ...event, date: new Date(event.date).toDateString(), })),
+    onRequest({ request, options }) {
+        const token = useCookie('token');
+        // Set the request headers
+        options.headers = options.headers || {}
+        options.headers.authorization = 'Bearer ' + token.value
+    },
+})
 </script>
 <style>
 .animate.pop {
